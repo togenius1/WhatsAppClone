@@ -51,7 +51,7 @@ function RootNavigator() {
           borderBottomWidth: 0,
         },
         headerTintColor: Colors.light.background,
-        headerTitleAlign: 'left',
+        // headerTitleAlign: 'left',
         headerTitleStyle: {
           fontWeight: 'bold',
         },
