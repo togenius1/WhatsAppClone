@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import Colors from "../../constants/Colors";
+import {StyleSheet} from 'react-native';
+import Colors from '../../constants/Colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -11,16 +11,14 @@ const styles = StyleSheet.create({
   },
   name: {
     color: Colors.light.tint,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 5,
   },
-  message: {
-
-  },
+  message: {},
   time: {
-    alignSelf: "flex-end",
-    color: 'grey'
-  }
+    alignSelf: 'flex-end',
+    color: 'grey',
+  },
 });
 
 export default styles;
