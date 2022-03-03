@@ -10,18 +10,15 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Octicons from 'react-native-vector-icons/Octicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import ChatRoomScreen from '../screens/ChatRoomScreen';
 import {RootStackParamList} from '../types';
 import MainTabNavigator from './MainTabNavigator';
-// import LinkingConfiguration from './LinkingConfiguration';
 import Colors from '../constants/Colors';
 import ContactsScreen from '../screens/ContactsScreen';
 
-// If you are not familiar with React Navigation, we recommend going through the
-// "Fundamentals" guide: https://reactnavigation.org/docs/getting-started
 export default function Navigation({
   colorScheme,
 }: {
@@ -46,12 +43,12 @@ function RootNavigator() {
       screenOptions={{
         headerStyle: {
           backgroundColor: Colors.light.tint,
-          elevation: 0,
-          shadowOpacity: 0,
-          borderBottomWidth: 0,
+          // elevation: 0,
+          // shadowOpacity: 0,
+          // borderBottomWidth: 0,
         },
         headerTintColor: Colors.light.background,
-        // headerTitleAlign: 'left',
+        headerTitleAlign: 'left',
         headerTitleStyle: {
           fontWeight: 'bold',
         },
@@ -84,6 +81,7 @@ function RootNavigator() {
         component={ChatRoomScreen}
         options={({route}) => ({
           title: route.params?.name,
+          headerBackTitleVisible: false,
           headerRight: () => (
             <View
               style={{
