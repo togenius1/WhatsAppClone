@@ -1,5 +1,5 @@
-import { StyleSheet } from "react-native";
-import Colors from "../../constants/Colors";
+import {StyleSheet} from 'react-native';
+import Colors from '../../constants/Colors';
 
 const styles = StyleSheet.create({
   container: {
@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    marginHorizontal: 10
+    marginHorizontal: 10,
   },
   icon: {
     marginHorizontal: 5,
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-  }
-})
+  },
+});
 
 export default styles;

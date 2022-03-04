@@ -1,8 +1,9 @@
+import {View, TouchableOpacity} from 'react-native';
 import React from 'react';
-import {TouchableOpacity, View} from 'react-native';
-// import {MaterialCommunityIcons} from '@expo/vector-icons';
-import styles from './styles';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
+
+import styles from './styles';
 
 const NewMessageButton = () => {
   const navigation = useNavigation();
@@ -14,11 +15,11 @@ const NewMessageButton = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={onPress}>
-        {/* <MaterialCommunityIcons
+        <MaterialCommunityIcons
           name="message-reply-text"
           size={28}
           color="white"
-        /> */}
+        />
       </TouchableOpacity>
     </View>
   );
