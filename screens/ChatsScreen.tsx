@@ -1,5 +1,5 @@
 import {FlatList, StyleSheet, Text, Pressable} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {Auth, DataStore} from 'aws-amplify';
 
 import {View} from '../components/Themed';

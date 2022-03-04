@@ -7,7 +7,7 @@ import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 
-import {Auth} from 'aws-amplify';
+// import {Auth} from 'aws-amplify';
 // import {getUser} from './src/graphql/queries';
 // import {createUser} from './src/graphql/mutations';
 

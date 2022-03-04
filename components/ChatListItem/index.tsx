@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Image, TouchableWithoutFeedback} from 'react-native';
+import {View, Text, Image, Pressable} from 'react-native';
 import {ChatRoom} from '../../types';
 import styles from './style';
 import moment from 'moment';
@@ -24,7 +24,7 @@ const ChatListItem = (props: ChatListItemProps) => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={onClick}>
+    <Pressable onPress={onClick}>
       <View style={styles.container}>
         <View style={styles.lefContainer}>
           <Image source={{uri: user.imageUri}} style={styles.avatar} />
@@ -41,7 +41,7 @@ const ChatListItem = (props: ChatListItemProps) => {
           {moment(chatRoom.lastMessage.createdAt).format('DD/MM/YY')}
         </Text>
       </View>
-    </TouchableWithoutFeedback>
+    </Pressable>
   );
 };
 

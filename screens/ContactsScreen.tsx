@@ -1,11 +1,30 @@
-import * as React from 'react';
-import {FlatList, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {FlatList, StyleSheet, Pressable} from 'react-native';
+import {Auth, DataStore} from 'aws-amplify';
 
 import {View} from '../components/Themed';
 import ContactListItem from '../components/ContactListItem';
-import users from '../data/Users';
+// import users from '../data/Users';
+import {User} from '../src/models';
 
 export default function ContactsScreen() {
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    // query users
+    DataStore.query(User).then(setUsers);
+  }, []);
+
+  // useEffect(() => {
+  //   // query users
+  //   const fetchUsers = async () => {
+  //     const fetchedUsers = await DataStore.query(User);
+  //     setUsers(fetchedUsers);
+  //   };
+
+  //   fetchUsers();
+  // }, []);
+
   return (
     <View style={styles.container}>
       <FlatList
