@@ -1,13 +1,18 @@
-import {FlatList, StyleSheet, Text} from 'react-native';
+import {FlatList, StyleSheet, Text, Pressable} from 'react-native';
 import React from 'react';
+import {Auth, DataStore} from 'aws-amplify';
 
 import {View} from '../components/Themed';
 import ChatListItem from '../components/ChatListItem';
-
 import chatRooms from '../data/ChatRooms';
 import NewMessageButton from '../components/NewMessageButton';
 
 export default function ChatsScreen() {
+  const logOut = async () => {
+    await DataStore.clear();
+    Auth.signOut();
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -17,6 +22,19 @@ export default function ChatsScreen() {
         keyExtractor={item => item.id}
       />
       <NewMessageButton />
+
+      <Pressable
+        onPress={logOut}
+        style={{
+          backgroundColor: 'red',
+          height: 50,
+          width: '100%',
+          margin: 10,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Text>Logout</Text>
+      </Pressable>
     </View>
   );
 }

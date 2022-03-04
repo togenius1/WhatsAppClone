@@ -1,6 +1,7 @@
 // import {StatusBar} from 'expo-status-bar';
 import React, {useEffect} from 'react';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {withAuthenticator} from 'aws-amplify-react-native';
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
@@ -71,5 +72,5 @@ function App() {
   }
 }
 
-export default App;
+export default withAuthenticator(App);
 // export default withAuthenticator(App);

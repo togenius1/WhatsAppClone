@@ -3177,12 +3177,12 @@
   "resolved" "https://registry.npmjs.org/@react-native-community/eslint-plugin/-/eslint-plugin-1.1.0.tgz"
   "version" "1.1.0"
 
-"@react-native-community/netinfo@^8.0.0":
-  "integrity" "sha512-8cjkbOWe55vzzc64hfjDv6GWSY8+kfEnxRbwTf9l3hFYDIUMRmMoW+SwxE+QoAfMY32nbEERDy68iev3busRFQ=="
-  "resolved" "https://registry.npmjs.org/@react-native-community/netinfo/-/netinfo-8.0.0.tgz"
-  "version" "8.0.0"
+"@react-native-community/netinfo@^8.1.0":
+  "integrity" "sha512-hDXtkqp6UmUEctcUheNwWwg3YZke1hGYj1Eu4A92EtotOLHI3u4C9RJr6unYPChR2+Pr0r1u20WiZAuXBInxog=="
+  "resolved" "https://registry.npmjs.org/@react-native-community/netinfo/-/netinfo-8.1.0.tgz"
+  "version" "8.1.0"
 
-"@react-native-picker/picker@>=1.2":
+"@react-native-picker/picker@^2.3.1", "@react-native-picker/picker@>=1.2":
   "integrity" "sha512-DAw1o3bHNRnQPImsK53xCYkgC8bH+t9uTM+0JjNIlmMwvVLFnmDxi9v5iBTIWFMWG/pUHQaw66E29wW6oJG9Tw=="
   "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.3.1.tgz"
   "version" "2.3.1"
@@ -3669,7 +3669,7 @@
     "require-from-string" "^2.0.2"
     "uri-js" "^4.2.2"
 
-"amazon-cognito-identity-js@5.2.7":
+"amazon-cognito-identity-js@^5.2.7", "amazon-cognito-identity-js@5.2.7":
   "integrity" "sha512-4JGhmD/iSIIgg0DUZWE6j1al1rOa6lTL/antId37Ao3Uhy3mZqZC6TGQ6DMcX4d+QgAr/DeevJDupRoAOnbOyQ=="
   "resolved" "https://registry.npmjs.org/amazon-cognito-identity-js/-/amazon-cognito-identity-js-5.2.7.tgz"
   "version" "5.2.7"
@@ -3881,7 +3881,7 @@
   dependencies:
     "buffer" "^5.2.1"
 
-"aws-amplify@4.x.x":
+"aws-amplify@^4.3.15", "aws-amplify@4.x.x":
   "integrity" "sha512-MepXOR18M4nCYJzagUdIuvGMjjlKiFsOdQ2rpQSVzI7+Vt59hsdgbx6TqdNMAQkej90gP+FoPNEh2F2mtmkDjQ=="
   "resolved" "https://registry.npmjs.org/aws-amplify/-/aws-amplify-4.3.15.tgz"
   "version" "4.3.15"

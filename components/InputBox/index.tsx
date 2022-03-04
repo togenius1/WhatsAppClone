@@ -1,5 +1,7 @@
 import {View, TextInput, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
+import {Auth, DataStore} from 'aws-amplify';
+import {createMessage, updateChatRoom} from '../../src/graphql/mutations';
 
 import styles from './styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,18 +9,35 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {Message, ChatRoom, ChatRoomUser} from '../../src/models';
 
 const InputBox = () => {
   const [message, setMessage] = useState('');
+  const [myUserId, setMyUserId] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userInfo = await Auth.currentAuthenticatedUser();
+      setMyUserId(userInfo.attributes.sub);
+    };
+    fetchUser();
+  }, []);
 
   const onMicrophonePress = () => {
     console.log('Microphone');
   };
 
-  const onSendPress = () => {
-    console.log(`Sending: ${message}`);
-
-    // send a message to the backend
+  const onSendPress = async () => {
+    // try {
+    //   const newMessageData = await DataStore.save(
+    //     new Message({
+    //       content: message,
+    //     }),
+    //   );
+    //   console.log(newMessageData);
+    // } catch (e) {
+    //   console.log(e);
+    // }
 
     setMessage('');
   };
