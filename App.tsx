@@ -7,7 +7,7 @@ import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import Navigation from './navigation';
 
-// import {Auth, API, graphqlOperation} from 'aws-amplify';
+import {Auth} from 'aws-amplify';
 // import {getUser} from './src/graphql/queries';
 // import {createUser} from './src/graphql/mutations';
 
@@ -26,6 +26,8 @@ import Navigation from './navigation';
 function App() {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+
+  // Auth.currentAuthenticatedUser().then(console.log);
 
   // const getRandomImage = () => {
   //   return randomImages[Math.floor(Math.random() * randomImages.length)];

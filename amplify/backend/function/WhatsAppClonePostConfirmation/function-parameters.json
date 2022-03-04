@@ -1,0 +1,17 @@
+{
+  "trigger": true,
+  "modules": [
+    "custom"
+  ],
+  "parentResource": "WhatsAppClone",
+  "functionName": "WhatsAppClonePostConfirmation",
+  "resourceName": "WhatsAppClonePostConfirmation",
+  "parentStack": "auth",
+  "triggerEnvs": [],
+  "triggerDir": "/snapshot/node_modules/@aws-amplify/amplify-category-auth/provider-utils/awscloudformation/triggers/PostConfirmation",
+  "triggerTemplate": "PostConfirmation.json.ejs",
+  "triggerEventPath": "PostConfirmation.event.json",
+  "roleName": "WhatsAppClonePostConfirmation",
+  "skipEdit": true,
+  "enableCors": false
+}
