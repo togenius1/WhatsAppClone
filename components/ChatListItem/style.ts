@@ -10,6 +10,23 @@ const styles = StyleSheet.create({
   lefContainer: {
     flexDirection: 'row',
   },
+  badgeContainer: {
+    backgroundColor: '#0C6157',
+    width: 25,
+    height: 25,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    left: 45,
+    top: 10,
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 12,
+  },
   midContainer: {
     justifyContent: 'space-around',
   },

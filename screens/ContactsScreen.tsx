@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Pressable} from 'react-native';
-import {Auth, DataStore} from 'aws-amplify';
+import {FlatList, StyleSheet} from 'react-native';
+import {DataStore} from '@aws-amplify/datastore';
 
 import {View} from '../components/Themed';
 import ContactListItem from '../components/ContactListItem';

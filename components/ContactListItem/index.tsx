@@ -1,7 +1,8 @@
 import {View, Text, Image, Pressable} from 'react-native';
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {DataStore, Auth} from 'aws-amplify';
+import {Auth} from '@aws-amplify/auth';
+import {DataStore} from '@aws-amplify/datastore';
 
 // import {User} from '../../types';
 import {User, ChatRoom, ChatRoomUser} from '../../src/models';
@@ -9,9 +10,6 @@ import styles from './style';
 
 export default function ContactListItem(props: {user: User}) {
   const {user} = props;
-  State = {
-    dbUser,
-  };
 
   const navigation = useNavigation();
 
@@ -19,7 +17,6 @@ export default function ContactListItem(props: {user: User}) {
     // TODO if there is already a chat room between these 2 users
     // then redirect to the existing chat room
     // otherwise, create a new chat room with these users.
-    
 
     // Create a chat room
     const newChatRoom = await DataStore.save(new ChatRoom({newMessages: 0}));
@@ -33,7 +30,7 @@ export default function ContactListItem(props: {user: User}) {
       }),
     );
 
-    // connect clicked user with the chat room
+    // connect a clicked user with the chat room
     await DataStore.save(
       new ChatRoomUser({
         user,
