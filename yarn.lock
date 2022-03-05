@@ -4774,6 +4774,11 @@
   "resolved" "https://registry.npmjs.org/emittery/-/emittery-0.7.2.tgz"
   "version" "0.7.2"
 
+"emoji-datasource@^6.0.0":
+  "integrity" "sha512-fbS3QJpzGHhujvBULSKXcvsYmVg+1ldfI3VVXG3jnFuniZtkp7rz/OcTcQjbp3m43BYxmiJgKmaoOUPxXQupRQ=="
+  "resolved" "https://registry.npmjs.org/emoji-datasource/-/emoji-datasource-6.1.1.tgz"
+  "version" "6.1.1"
+
 "emoji-regex@^8.0.0":
   "integrity" "sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A=="
   "resolved" "https://registry.npmjs.org/emoji-regex/-/emoji-regex-8.0.0.tgz"
@@ -7908,6 +7913,13 @@
     "flow-parser" "^0.121.0"
     "jscodeshift" "^0.11.0"
     "nullthrows" "^1.1.1"
+
+"react-native-emoji-selector@^0.2.0":
+  "integrity" "sha512-+rPPWG5vl5AexdH8udEwtzdq9QUGD6kp+dQ8C/459d3ScM0S3UnT/qAvhmpsTgCbgjpdwiJIcrKNxKmGEDb15g=="
+  "resolved" "https://registry.npmjs.org/react-native-emoji-selector/-/react-native-emoji-selector-0.2.0.tgz"
+  "version" "0.2.0"
+  dependencies:
+    "emoji-datasource" "^6.0.0"
 
 "react-native-get-random-values@^1.4.0":
   "integrity" "sha512-28KRYGpIG/upV8+k/qFA+TwGW+yGjmtOHaCduJHpOQK1QUTyhiA6E2IgL4UvvU2dybeCTYFmUi9wcEQ0GiWe5g=="
