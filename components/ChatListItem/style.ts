@@ -3,20 +3,21 @@ import {StyleSheet} from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
     padding: 10,
   },
-  lefContainer: {
-    flexDirection: 'row',
+  image: {
+    height: 50,
+    width: 50,
+    borderRadius: 30,
+    marginRight: 10,
   },
   badgeContainer: {
-    backgroundColor: '#0C6157',
-    width: 25,
-    height: 25,
-    borderRadius: 15,
+    backgroundColor: '#3777f0',
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#fff',
+    borderColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute',
@@ -27,25 +28,20 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
   },
-  midContainer: {
-    justifyContent: 'space-around',
+  rightContainer: {
+    flex: 1,
+    justifyContent: 'center',
   },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 50,
-    marginRight: 15,
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  username: {
+  name: {
     fontWeight: 'bold',
     fontSize: 16,
+    marginBottom: 3,
   },
-  lastMessage: {
-    fontSize: 16,
-    color: 'grey',
-  },
-  time: {
-    fontSize: 14,
+  text: {
     color: 'grey',
   },
 });

@@ -18,6 +18,7 @@ import {RootStackParamList} from '../types';
 import MainTabNavigator from './MainTabNavigator';
 import Colors from '../constants/Colors';
 import ContactsScreen from '../screens/ContactsScreen';
+import ChatRoomHeader from './ChatRoomHeader';
 
 export default function Navigation({
   colorScheme,
@@ -80,7 +81,8 @@ function RootNavigator() {
         name="ChatRoom"
         component={ChatRoomScreen}
         options={({route}) => ({
-          title: route.params?.name,
+          // title: route.params?.id,
+          headerTitle: () => <ChatRoomHeader id={route.params?.id} />,
           headerBackTitleVisible: false,
           headerRight: () => (
             <View

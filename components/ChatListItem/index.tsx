@@ -3,17 +3,18 @@ import {View, Text, Image, Pressable, ActivityIndicator} from 'react-native';
 import {Auth} from '@aws-amplify/auth';
 import {DataStore} from '@aws-amplify/datastore';
 
-import {ChatRoomUser, User, ChatRoom} from '../../src/models';
-// import {ChatRoom} from '../../types';
+import {ChatRoomUser, User, ChatRoom, Message} from '../../src/models';
 import styles from './style';
 import moment from 'moment';
 import {useNavigation} from '@react-navigation/native';
 
-const ChatListItem = (props: {chatRoom: ChatRoom}) => {
-  const {chatRoom} = props;
-  const [users, setUsers] = useState<User[]>([]);
+const ChatListItem = ({chatRoom}) => {
+  // const [users, setUsers] = useState<User[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [lastMessage, setLastMessage] = useState<Message | undefined>();
+  const [isLoading, setIsLoading] = useState(true);
 
+  // const {chatRoom} = props;
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -28,43 +29,52 @@ const ChatListItem = (props: {chatRoom: ChatRoom}) => {
       setUser(
         fetchedUsers.find(user => user.id !== authUser.attributes.sub) || null,
       );
+      setIsLoading(false);
     };
-
     fetchUsers();
   }, []);
 
-  const onClick = () => {
+  useEffect(() => {
+    if (!chatRoom.chatRoomLastMessageId) {
+      return;
+    }
+    DataStore.query(Message, chatRoom.chatRoomLastMessageId).then(
+      setLastMessage,
+    );
+  }, []);
+
+  const onPress = () => {
     navigation.navigate('ChatRoom', {
       id: chatRoom.id,
     });
   };
 
-  if (!user) {
+  if (isLoading) {
     return <ActivityIndicator />;
   }
 
+  const time = moment(lastMessage?.createdAt).from(moment());
+
   return (
-    <Pressable onPress={onClick}>
-      <View style={styles.container}>
-        <View style={styles.lefContainer}>
-          <Image source={{uri: user.imageUri}} style={styles.avatar} />
+    <Pressable onPress={onPress} style={styles.container}>
+      <Image
+        source={{uri: chatRoom.imageUri || user?.imageUri}}
+        style={styles.image}
+      />
 
-          {!!chatRoom.newMessages && (
-            <View style={styles.badgeContainer}>
-              <Text style={styles.badgeText}>{chatRoom.newMessages}</Text>
-            </View>
-          )}
-
-          <View style={styles.midContainer}>
-            <Text style={styles.username}>{user.name}</Text>
-            <Text numberOfLines={2} style={styles.lastMessage}>
-              {chatRoom.lastMessage?.content}
-            </Text>
-          </View>
+      {!!chatRoom.newMessages && (
+        <View style={styles.badgeContainer}>
+          <Text style={styles.badgeText}>{chatRoom.newMessages}</Text>
         </View>
+      )}
 
-        <Text style={styles.time}>
-          {moment(chatRoom.lastMessage?.createdAt).format('DD/MM/YY')}
+      <View style={styles.rightContainer}>
+        <View style={styles.row}>
+          <Text style={styles.name}>{chatRoom.name || user?.name}</Text>
+          <Text style={styles.text}>{time}</Text>
+        </View>
+        <Text numberOfLines={1} style={styles.text}>
+          {lastMessage?.content}
         </Text>
       </View>
     </Pressable>

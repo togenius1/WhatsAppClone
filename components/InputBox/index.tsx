@@ -1,7 +1,7 @@
 import {View, TextInput, TouchableOpacity} from 'react-native';
 import React, {useState, useEffect} from 'react';
-import {Auth, DataStore} from 'aws-amplify';
-import {createMessage, updateChatRoom} from '../../src/graphql/mutations';
+import {Auth} from '@aws-amplify/auth';
+import {DataStore} from '@aws-amplify/datastore';
 
 import styles from './styles';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -9,39 +9,35 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {Message, ChatRoom, ChatRoomUser} from '../../src/models';
+import {Message, ChatRoom} from '../../src/models';
 
-const InputBox = () => {
+const InputBox = ({chatRoom}) => {
   const [message, setMessage] = useState('');
-  const [myUserId, setMyUserId] = useState(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userInfo = await Auth.currentAuthenticatedUser();
-      setMyUserId(userInfo.attributes.sub);
-    };
-    fetchUser();
-  }, []);
 
   const onMicrophonePress = () => {
     console.log('Microphone');
   };
 
   const onSendPress = async () => {
-    // try {
-    //   const newMessageData = await DataStore.save(
-    //     new Message({
-    //       content: message,
-    //     }),
-    //   );
-    //   console.log(newMessageData);
-    // } catch (e) {
-    //   console.log(e);
-    // }
-
+    const authUser = await Auth.currentAuthenticatedUser();
+    const newMessage = await DataStore.save(
+      new Message({
+        content: message,
+        userID: authUser.attributes.sub,
+        chatroomID: chatRoom.id,
+      }),
+    );
+    updateLastMessage(newMessage);
     setMessage('');
   };
 
+  const updateLastMessage = async newMessage => {
+    DataStore.save(
+      ChatRoom.copyOf(chatRoom, updatedChatRoom => {
+        updatedChatRoom.LastMessage = newMessage;
+      }),
+    );
+  };
   const onPress = () => {
     if (!message) {
       onMicrophonePress();
