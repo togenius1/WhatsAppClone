@@ -14,6 +14,16 @@ target 'WhatsAppCloneTypeScript' do
 
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
   
+
+    # …
+    permissions_path = '../node_modules/react-native-permissions/ios'
+  
+    pod 'Permission-Camera', :path => "#{permissions_path}/Camera"
+    pod 'Permission-MediaLibrary', :path => "#{permissions_path}/MediaLibrary"
+    pod 'Permission-Microphone', :path => "#{permissions_path}/Microphone"
+    pod 'Permission-PhotoLibrary', :path => "#{permissions_path}/PhotoLibrary"
+  
+
   target 'WhatsAppCloneTypeScriptTests' do
     inherit! :complete
     # Pods for testing

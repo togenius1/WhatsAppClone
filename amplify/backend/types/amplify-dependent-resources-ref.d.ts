@@ -24,5 +24,11 @@ export type AmplifyDependentResourcesAttributes = {
             "LambdaExecutionRole": "string",
             "Region": "string"
         }
+    },
+    "storage": {
+        "s3whatsappclonestoragedeb10f02": {
+            "BucketName": "string",
+            "Region": "string"
+        }
     }
 }

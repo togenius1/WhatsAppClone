@@ -42,7 +42,7 @@ export default function ChatsScreen() {
       />
       <NewMessageButton />
 
-      {/* <Pressable
+      <Pressable
         onPress={logOut}
         style={{
           backgroundColor: 'red',
@@ -53,7 +53,7 @@ export default function ChatsScreen() {
           justifyContent: 'center',
         }}>
         <Text>Logout</Text>
-      </Pressable> */}
+      </Pressable>
     </View>
   );
 }
