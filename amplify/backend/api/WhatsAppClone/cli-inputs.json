@@ -3,7 +3,7 @@
   "serviceConfiguration": {
     "apiName": "WhatsAppClone",
     "serviceName": "AppSync",
-    "gqlSchemaPath": "/tmp/amplify-68da8457-e4b5-4a7f-9709-2138be3d8cad/amplify/backend/api/WhatsAppClone/schema.graphql",
+    "gqlSchemaPath": "/tmp/amplify-2f11e82e-e30e-4ea5-9cef-2c2a98d2ce24/amplify/backend/api/WhatsAppClone/schema.graphql",
     "defaultAuthType": {
       "mode": "API_KEY",
       "keyDescription": "api key description",

@@ -51,7 +51,7 @@ const ChatListItem = (props: Props) => {
     DataStore.query(Message, chatRoom.chatRoomLastMessageId).then(
       setLastMessage,
     );
-  }, []);
+  }, [chatRoom.chatRoomLastMessageId]);
 
   const onPress = () => {
     navigation.navigate('ChatRoom', {
@@ -64,7 +64,7 @@ const ChatListItem = (props: Props) => {
   }
 
   const time = moment(lastMessage?.createdAt).from(moment());
-
+  // console.log('last message: ', lastMessage);
   return (
     <Pressable onPress={onPress} style={styles.container}>
       <Image

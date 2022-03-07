@@ -36,7 +36,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Message, ChatRoom} from '../../src/models';
-import AudioPlayer from '../../AudioPlayer';
+import AudioPlayer from '../AudioPlayer';
 
 type Props = {
   chatRoom: ChatRoom;
@@ -53,7 +53,7 @@ export default function InputBox(props: Props) {
   const [progress, setProgress] = useState<any>(0);
   const [image, setImage] = useState<any>(null);
   const [startRecord, setStartRecord] = useState<boolean>(false);
-  const [soundURI, setSoundURI] = useState<any>(null);
+  const [soundURI, setSoundURI] = useState<any>();
   const [recording, setRecording] = useState<any>({
     isLoggingIn: false,
     recordSecs: 0,
@@ -141,9 +141,10 @@ export default function InputBox(props: Props) {
   const onButtonPress = useCallback((type, options) => {
     if (type === 'capture') {
       ImagePicker.launchCamera(options, setImage);
-      // console.log('camera');
+      resetFields();
     } else {
       ImagePicker.launchImageLibrary(options, setImage);
+      resetFields();
     }
   }, []);
 
@@ -152,6 +153,22 @@ export default function InputBox(props: Props) {
     const respone = await fetch(uri);
     const blob = await respone.blob();
     return blob;
+  };
+
+  const sendMessage = async () => {
+    // console.warn('send message');
+    const authUser = await Auth.currentAuthenticatedUser();
+    const newMessage = await DataStore.save(
+      new Message({
+        content: message,
+        userID: authUser.attributes.sub,
+        chatroomID: chatRoom.id,
+        status: 'SENT',
+      }),
+    );
+    updateLastMessage(newMessage);
+
+    resetFields();
   };
 
   // Send Image
@@ -179,29 +196,6 @@ export default function InputBox(props: Props) {
     updateLastMessage(newMessage);
 
     resetFields();
-  };
-
-  const sendMessage = async () => {
-    // console.warn('send message');
-    const authUser = await Auth.currentAuthenticatedUser();
-    const newMessage = await DataStore.save(
-      new Message({
-        content: message,
-        userID: authUser.attributes.sub,
-        chatroomID: chatRoom.id,
-      }),
-    );
-    updateLastMessage(newMessage);
-
-    resetFields();
-  };
-
-  const updateLastMessage = async (newMessage: Message) => {
-    DataStore.save(
-      ChatRoom.copyOf(chatRoom, updatedChatRoom => {
-        updatedChatRoom.LastMessage = newMessage;
-      }),
-    );
   };
 
   const progressCallback = () => {
@@ -236,6 +230,14 @@ export default function InputBox(props: Props) {
     updateLastMessage(newMessage);
 
     resetFields();
+  };
+
+  const updateLastMessage = async (newMessage: Message) => {
+    DataStore.save(
+      ChatRoom.copyOf(chatRoom, updatedChatRoom => {
+        updatedChatRoom.LastMessage = newMessage;
+      }),
+    );
   };
 
   const onMicrophonePress = () => {
@@ -279,6 +281,11 @@ export default function InputBox(props: Props) {
     setStartRecord(false);
   };
 
+  const resetSendAudio = () => {
+    setSoundURI(null);
+    resetFields();
+  };
+
   return (
     <KeyboardAvoidingView
       style={[styles.root, {height: isEmojiPickerOpen ? '50%' : 'auto'}]}
@@ -308,19 +315,29 @@ export default function InputBox(props: Props) {
                 }}
               />
             </View>
-
             <Pressable onPress={() => setImage(null)}>
               <Ionicons
                 name="close-outline"
                 size={24}
                 color="black"
-                style={{margin: 5}}
+                style={{margin: 5, marginTop: -50}}
               />
             </Pressable>
           </View>
         ))}
 
       {soundURI && <AudioPlayer soundURI={soundURI} />}
+      {soundURI && (
+        <Pressable onPress={resetSendAudio}>
+          <Ionicons
+            name="close-outline"
+            size={24}
+            color="black"
+            // style={{marginTop: -40}}
+          />
+        </Pressable>
+      )}
+
       {startRecord && (
         <Text style={{color: 'black'}}>{recording?.recordTime}</Text>
       )}
@@ -360,8 +377,8 @@ export default function InputBox(props: Props) {
             </Pressable>
           )}
         </View>
-        <Pressable onPress={onPress}>
-          <View style={styles.buttonContainer}>
+        <View>
+          <Pressable onPress={onPress} style={styles.buttonContainer}>
             {!startRecord ? (
               <View>
                 {message || image ? (
@@ -383,8 +400,8 @@ export default function InputBox(props: Props) {
                 )}
               </View>
             )}
-          </View>
-        </Pressable>
+          </Pressable>
+        </View>
       </View>
 
       {isEmojiPickerOpen && (
