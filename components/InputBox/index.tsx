@@ -1,14 +1,16 @@
 import {
   View,
+  Text,
   StyleSheet,
   Pressable,
   TextInput,
   KeyboardAvoidingView,
   Platform,
   Image,
+  PermissionsAndroid,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {Auth} from '@aws-amplify/auth';
 import {DataStore} from '@aws-amplify/datastore';
 import {Storage} from '@aws-amplify/storage';
@@ -34,35 +36,33 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {Message, ChatRoom} from '../../src/models';
+import AudioPlayer from '../../AudioPlayer';
 
-interface State {
-  isLoggingIn: boolean;
-  recordSecs: number;
-  recordTime: string;
-  currentPositionSec: number;
-  currentDurationSec: number;
-  playTime: string;
-  duration: string;
-}
-
-const state = {
-  isLoggingIn: false,
-  recordSecs: 0,
-  recordTime: '00:00:00',
-  currentPositionSec: 0,
-  currentDurationSec: 0,
-  playTime: '00:00:00',
-  duration: '00:00:00',
+type Props = {
+  chatRoom: ChatRoom;
 };
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 audioRecorderPlayer.setSubscriptionDuration(0.1); // optional. Default is 0.5
 
-export default function InputBox({chatRoom, state}) {
-  const [message, setMessage] = useState('');
-  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-  const [progress, setProgress] = useState<number>(0);
+export default function InputBox(props: Props) {
+  const {chatRoom} = props;
+
+  const [message, setMessage] = useState<string>('');
+  const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState<boolean>(false);
+  const [progress, setProgress] = useState<any>(0);
   const [image, setImage] = useState<any>(null);
+  const [startRecord, setStartRecord] = useState<boolean>(false);
+  const [soundURI, setSoundURI] = useState<any>(null);
+  const [recording, setRecording] = useState<any>({
+    isLoggingIn: false,
+    recordSecs: 0,
+    recordTime: '00:00:00',
+    currentPositionSec: 0,
+    currentDurationSec: 0,
+    playTime: '00:00:00',
+    duration: '00:00:00',
+  });
 
   const dirs = RNFetchBlob.fs.dirs;
   const path = Platform.select({
@@ -70,7 +70,75 @@ export default function InputBox({chatRoom, state}) {
     android: `${dirs.CacheDir}/hello.mp3`,
   });
 
-  const onButtonPress = React.useCallback((type, options) => {
+  const onStartRecord = async () => {
+    // Check permissions
+    if (Platform.OS === 'android') {
+      try {
+        const grants = await PermissionsAndroid.requestMultiple([
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
+        ]);
+
+        console.log('write external stroage', grants);
+
+        if (
+          grants['android.permission.WRITE_EXTERNAL_STORAGE'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.READ_EXTERNAL_STORAGE'] ===
+            PermissionsAndroid.RESULTS.GRANTED &&
+          grants['android.permission.RECORD_AUDIO'] ===
+            PermissionsAndroid.RESULTS.GRANTED
+        ) {
+          console.log('permissions granted');
+        } else {
+          console.log('All required permissions not granted');
+          return;
+        }
+      } catch (err) {
+        console.warn(err);
+        return;
+      }
+    }
+
+    const audioSet: AudioSet = {
+      AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
+      AudioSourceAndroid: AudioSourceAndroidType.MIC,
+      AVEncoderAudioQualityKeyIOS: AVEncoderAudioQualityIOSType.high,
+      AVNumberOfChannelsKeyIOS: 2,
+      AVFormatIDKeyIOS: AVEncodingOption.aac,
+    };
+
+    // console.log('audioSet', audioSet);
+    //? Custom path
+    const uri = await audioRecorderPlayer.startRecorder(path, audioSet);
+
+    //? Default path
+    // const uri = await audioRecorderPlayer.startRecorder(undefined, audioSet);
+
+    audioRecorderPlayer.addRecordBackListener((e: RecordBackType) => {
+      console.log('record-back', e);
+      setRecording({
+        recordSecs: e.currentPosition,
+        recordTime: audioRecorderPlayer.mmssss(Math.floor(e.currentPosition)),
+      });
+    });
+    console.log(`uri: ${uri}`);
+  };
+
+  const onStopRecord = async () => {
+    const result = await audioRecorderPlayer.stopRecorder();
+    audioRecorderPlayer.removeRecordBackListener();
+    setRecording({
+      recordSecs: 0,
+    });
+    // console.log(result);
+
+    setSoundURI(result);
+  };
+
+  // Capture Image or pick image from library
+  const onButtonPress = useCallback((type, options) => {
     if (type === 'capture') {
       ImagePicker.launchCamera(options, setImage);
       // console.log('camera');
@@ -78,12 +146,6 @@ export default function InputBox({chatRoom, state}) {
       ImagePicker.launchImageLibrary(options, setImage);
     }
   }, []);
-
-  // console.log(response);
-
-  const onMicrophonePress = () => {
-    console.log('Microphone');
-  };
 
   // Get Blob
   const getBlob = async (uri: string) => {
@@ -94,6 +156,7 @@ export default function InputBox({chatRoom, state}) {
 
   // Send Image
   const sendImage = async () => {
+    // console.warn('send image');
     if (!image) {
       return;
     }
@@ -101,11 +164,10 @@ export default function InputBox({chatRoom, state}) {
     const {key} = await Storage.put(`${uuidv4()}.png`, blob, {
       progressCallback,
     });
-    // console.log(blob);
 
     // Send Image with Message
     const user = await Auth.currentAuthenticatedUser();
-    const newMessage = await DataStore.save(
+    const newMessage: Message = await DataStore.save(
       new Message({
         content: message,
         image: key,
@@ -120,6 +182,7 @@ export default function InputBox({chatRoom, state}) {
   };
 
   const sendMessage = async () => {
+    // console.warn('send message');
     const authUser = await Auth.currentAuthenticatedUser();
     const newMessage = await DataStore.save(
       new Message({
@@ -133,7 +196,7 @@ export default function InputBox({chatRoom, state}) {
     resetFields();
   };
 
-  const updateLastMessage = async newMessage => {
+  const updateLastMessage = async (newMessage: Message) => {
     DataStore.save(
       ChatRoom.copyOf(chatRoom, updatedChatRoom => {
         updatedChatRoom.LastMessage = newMessage;
@@ -141,16 +204,49 @@ export default function InputBox({chatRoom, state}) {
     );
   };
 
-  const progressCallback = progress => {
+  const progressCallback = () => {
     // console.log(`Uploaded: ${progress.loaded}/${progress.total}`);
     setProgress(progress.loaded / progress.total);
   };
 
-  const resetFields = () => {
-    setMessage('');
-    setIsEmojiPickerOpen(false);
-    setImage(null);
-    setProgress(0);
+  // Send audio
+  const sendAudio = async () => {
+    // console.warn('send audio');
+    if (!soundURI) {
+      return;
+    }
+    const uriParts = soundURI.split('.');
+    const extension = uriParts[uriParts.length - 1];
+    const blob = await getBlob(soundURI);
+    const {key} = await Storage.put(`${uuidv4()}.${extension}`, blob, {
+      progressCallback,
+    });
+
+    // Send Audio with Message
+    const user = await Auth.currentAuthenticatedUser();
+    const newMessage = await DataStore.save(
+      new Message({
+        content: message,
+        audio: key,
+        userID: user.attributes.sub,
+        chatroomID: chatRoom.id,
+      }),
+    );
+
+    updateLastMessage(newMessage);
+
+    resetFields();
+  };
+
+  const onMicrophonePress = () => {
+    // console.warn('Microphone');
+    setStartRecord(!startRecord);
+    onStartRecord();
+  };
+
+  const StopRecordPress = () => {
+    // console.warn('Stop Record');
+    onStopRecord();
   };
 
   const onPlusClicked = () => {
@@ -162,10 +258,25 @@ export default function InputBox({chatRoom, state}) {
       sendImage();
     } else if (message) {
       sendMessage();
-      console.log('send message');
+    } else if (!startRecord) {
+      onMicrophonePress();
+    } else if (!soundURI) {
+      StopRecordPress();
+    } else if (soundURI) {
+      sendAudio();
     } else {
       onPlusClicked();
     }
+  };
+
+  const resetFields = () => {
+    setMessage('');
+    setIsEmojiPickerOpen(false);
+    setImage(null);
+    setProgress(0);
+    setSoundURI(null);
+    setRecording(null);
+    setStartRecord(false);
   };
 
   return (
@@ -174,7 +285,7 @@ export default function InputBox({chatRoom, state}) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={100}>
       {image?.assets &&
-        image?.assets.map(({uri}) => (
+        image?.assets.map(({uri}: any) => (
           <View key={uri} style={styles.sendImageContainer}>
             <Image
               resizeMode="cover"
@@ -208,6 +319,11 @@ export default function InputBox({chatRoom, state}) {
             </Pressable>
           </View>
         ))}
+
+      {soundURI && <AudioPlayer soundURI={soundURI} />}
+      {startRecord && (
+        <Text style={{color: 'black'}}>{recording?.recordTime}</Text>
+      )}
 
       <View style={styles.row}>
         <View style={styles.inputContainer}>
@@ -246,14 +362,26 @@ export default function InputBox({chatRoom, state}) {
         </View>
         <Pressable onPress={onPress}>
           <View style={styles.buttonContainer}>
-            {message || image ? (
-              <MaterialIcons name="send" size={24} color="white" />
+            {!startRecord ? (
+              <View>
+                {message || image ? (
+                  <MaterialIcons name="send" size={24} color="white" />
+                ) : (
+                  <MaterialCommunityIcons
+                    name="microphone"
+                    size={24}
+                    color="white"
+                  />
+                )}
+              </View>
             ) : (
-              <MaterialCommunityIcons
-                name="microphone"
-                size={24}
-                color="white"
-              />
+              <View>
+                {soundURI ? (
+                  <MaterialIcons name="send" size={24} color="white" />
+                ) : (
+                  <MaterialCommunityIcons name="stop" size={24} color="white" />
+                )}
+              </View>
             )}
           </View>
         </Pressable>
@@ -312,7 +440,7 @@ const styles = StyleSheet.create({
   sendImageContainer: {
     flexDirection: 'row',
     marginVertical: 10,
-    alignSelf: 'stretch',
+    alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: 'lightgray',

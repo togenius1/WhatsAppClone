@@ -8,23 +8,35 @@ import {
 import React, {useState, useEffect} from 'react';
 import {Auth} from '@aws-amplify/auth';
 import {DataStore} from '@aws-amplify/datastore';
+import {Storage} from '@aws-amplify/storage';
 import {S3Image} from 'aws-amplify-react-native';
 import moment from 'moment';
 
 import {User, Message} from '../../src/models';
-// import {Message} from '../../types';
-// import styles from './styles';
 import Colors from '../../constants/Colors';
+import AudioPlayer from '../../AudioPlayer';
 
-const ChatMessage = ({message}) => {
+type Props = {
+  message: Message;
+};
+
+const ChatMessage = (props: Props) => {
   const [user, setUser] = useState<User | undefined>();
   const [isMe, setIsMe] = useState<boolean>(false);
+  const [soundURI, setSoundURI] = useState<any>(null);
 
+  const {message} = props;
   const {width} = useWindowDimensions();
 
   useEffect(() => {
     DataStore.query(User, message.userID).then(setUser);
   }, [message.userID]);
+
+  useEffect(() => {
+    if (message.audio) {
+      Storage.get(message.audio).then(setSoundURI);
+    }
+  }, []);
 
   useEffect(() => {
     const isMyMessage = async () => {
@@ -42,36 +54,38 @@ const ChatMessage = ({message}) => {
   }
 
   return (
-    <View style={styles.container}>
-      <View
-        style={[
-          styles.messageBox,
-          {
-            backgroundColor: isMe ? '#DCF8C5' : 'white',
-            marginLeft: isMe ? 50 : 0,
-            marginRight: isMe ? 0 : 50,
-          },
-        ]}>
-        {!isMe && <Text style={styles.name}>{message.name}</Text>}
-
+    // <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        isMe ? styles.rightContainer : styles.leftContainer,
+        {width: message.image ? '65%' : 'auto'},
+      ]}>
+      {!isMe && <Text style={styles.msgContainer}>{message.name}</Text>}
+      <View style={styles.row}>
         {message.image && (
           <View style={{marginBottom: message.content ? 10 : 0}}>
             <S3Image
               imgKey={message.image}
-              style={{width: width * 0.65, aspectRatio: 4 / 3}}
+              style={{width: width * 0.55, aspectRatio: 4 / 3}}
               resizeMode="contain"
             />
           </View>
         )}
+        {soundURI && <AudioPlayer soundURI={soundURI} />}
         {!!message.content && (
-          <Text style={{color: isMe ? 'black' : 'gray'}}>
+          <Text
+            style={{
+              color: isMe ? 'black' : 'black',
+            }}>
             {message.content}
           </Text>
         )}
-
-        <Text style={styles.time}>{moment(message.createdAt).fromNow()}</Text>
       </View>
+
+      <Text style={styles.time}>{moment(message.createdAt).fromNow()}</Text>
     </View>
+    // </View>
   );
 };
 
@@ -80,19 +94,37 @@ export default ChatMessage;
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    margin: 10,
+    borderRadius: 10,
+    maxWidth: '75%',
   },
-  messageBox: {
-    borderRadius: 5,
-    padding: 10,
+  row: {
+    // justifyContent: 'center',
+    alignItems: 'center',
   },
-  name: {
+  leftContainer: {
+    backgroundColor: '#DCF8C5',
+    marginRight: 'auto',
+    justifyContent: 'flex-start',
+    // marginLeft: 20,
+    // alignItems: 'flex-end',
+  },
+  rightContainer: {
+    backgroundColor: 'white',
+    marginLeft: 'auto',
+    justifyContent: 'flex-start',
+    // marginRight: 20,
+    // alignItems: 'flex-end',
+  },
+  msgContainer: {
     color: Colors.light.tint,
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  message: {},
   time: {
+    justifyContent: 'flex-end',
     alignSelf: 'flex-end',
     color: 'grey',
+    fontSize: 11,
   },
 });

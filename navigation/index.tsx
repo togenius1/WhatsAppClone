@@ -9,8 +9,6 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import Octicons from 'react-native-vector-icons/Octicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import NotFoundScreen from '../screens/NotFoundScreen';
 import ChatRoomScreen from '../screens/ChatRoomScreen';

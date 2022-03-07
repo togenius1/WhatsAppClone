@@ -17,10 +17,14 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import {ChatRoomUser, User} from '../src/models';
 
-const ChatRoomHeader = ({id}) => {
+type Props = {
+  id: any;
+};
+
+const ChatRoomHeader = (props: Props) => {
   const [user, setUser] = useState<User | null>(null);
 
-  // const {width} = WindowDimensions();
+  const {id} = props;
 
   useEffect(() => {
     if (!id) {
