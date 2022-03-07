@@ -5,6 +5,11 @@ import 'react-native-get-random-values';
 import Amplify from '@aws-amplify/core';
 import awsconfig from './src/aws-exports';
 
-Amplify.configure(awsconfig);
+Amplify.configure({
+  ...awsconfig,
+  Analytics: {
+    disabled: true,
+  },
+});
 
 AppRegistry.registerComponent(appName, () => App);

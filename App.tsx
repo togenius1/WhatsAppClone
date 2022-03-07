@@ -36,7 +36,7 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       updateLastOnline();
-    }, 1 * 60 * 1000);
+    }, 1 * 60 * 1000); // update every Minute * sec * 1000 milliseconds
     return () => clearInterval(interval);
   }, [user]);
 
@@ -51,6 +51,7 @@ function App() {
     fetchUser();
   }, []);
 
+  // update last online to database
   const updateLastOnline = async () => {
     if (!user) {
       return;
