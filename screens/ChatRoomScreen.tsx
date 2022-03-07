@@ -20,10 +20,10 @@ type ChatRoomScreenRouteProp = RouteProp<RootStackParamList, 'ChatRoom'>;
 
 const ChatRoomScreen = () => {
   const [messages, setMessages] = useState<MessageModel[]>([]);
-  const [chatRoom, setChatRoom] = useState<ChatRoom | null>(null);
+  const [chatRoom, setChatRoom] = useState<ChatRoom | undefined>(undefined);
 
   const route = useRoute<ChatRoomScreenRouteProp>();
-  const navigation = useNavigation<RootStackParamList>();
+  // const navigation = useNavigation<RootStackParamList>();
 
   useEffect(() => {
     const fetchChatRoom = async () => {
