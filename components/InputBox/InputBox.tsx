@@ -35,18 +35,22 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {Message, ChatRoom} from '../../src/models';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import {Message as MessageModel, ChatRoom} from '../../src/models';
 import AudioPlayer from '../AudioPlayer';
+import Message from '../Message/Message';
 
 type Props = {
   chatRoom: ChatRoom;
+  messageReplyTo: MessageModel | null;
+  removeMessageReplyTo: any;
 };
 
 const audioRecorderPlayer = new AudioRecorderPlayer();
 audioRecorderPlayer.setSubscriptionDuration(0.1); // optional. Default is 0.5
 
 export default function InputBox(props: Props) {
-  const {chatRoom} = props;
+  const {chatRoom, messageReplyTo, removeMessageReplyTo} = props;
 
   const [message, setMessage] = useState<string>('');
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState<boolean>(false);
@@ -159,11 +163,12 @@ export default function InputBox(props: Props) {
     // console.warn('send message');
     const authUser = await Auth.currentAuthenticatedUser();
     const newMessage = await DataStore.save(
-      new Message({
+      new MessageModel({
         content: message,
         userID: authUser.attributes.sub,
         chatroomID: chatRoom.id,
         status: 'SENT',
+        replyToMessageID: messageReplyTo?.id,
       }),
     );
     updateLastMessage(newMessage);
@@ -182,14 +187,15 @@ export default function InputBox(props: Props) {
       progressCallback,
     });
 
-    // Send Image with Message
+    // Send Image with MessageModel
     const user = await Auth.currentAuthenticatedUser();
-    const newMessage: Message = await DataStore.save(
-      new Message({
+    const newMessage: MessageModel = await DataStore.save(
+      new MessageModel({
         content: message,
         image: key,
         userID: user.attributes.sub,
         chatroomID: chatRoom.id,
+        replyToMessageID: messageReplyTo?.id,
       }),
     );
 
@@ -216,14 +222,15 @@ export default function InputBox(props: Props) {
       progressCallback,
     });
 
-    // Send Audio with Message
+    // Send Audio with MessageModel
     const user = await Auth.currentAuthenticatedUser();
     const newMessage = await DataStore.save(
-      new Message({
+      new MessageModel({
         content: message,
         audio: key,
         userID: user.attributes.sub,
         chatroomID: chatRoom.id,
+        replyToMessageID: messageReplyTo?.id,
       }),
     );
 
@@ -232,7 +239,7 @@ export default function InputBox(props: Props) {
     resetFields();
   };
 
-  const updateLastMessage = async (newMessage: Message) => {
+  const updateLastMessage = async (newMessage: MessageModel) => {
     DataStore.save(
       ChatRoom.copyOf(chatRoom, updatedChatRoom => {
         updatedChatRoom.LastMessage = newMessage;
@@ -279,6 +286,7 @@ export default function InputBox(props: Props) {
     setSoundURI(null);
     setRecording(null);
     setStartRecord(false);
+    removeMessageReplyTo();
   };
 
   const resetSendAudio = () => {
@@ -291,6 +299,29 @@ export default function InputBox(props: Props) {
       style={[styles.root, {height: isEmojiPickerOpen ? '50%' : 'auto'}]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={100}>
+      {messageReplyTo && (
+        <View
+          style={{
+            backgroundColor: 'white',
+            padding: 5,
+            flexDirection: 'row',
+            alignSelf: 'stretch',
+            justifyContent: 'space-between',
+          }}>
+          <View style={{flex: 1}}>
+            <Text>Reply to:</Text>
+            <Message message={messageReplyTo} />
+          </View>
+          <Pressable onPress={() => removeMessageReplyTo()}>
+            <AntDesign
+              name="close"
+              size={24}
+              color="black"
+              style={{margin: 5}}
+            />
+          </Pressable>
+        </View>
+      )}
       {image?.assets &&
         image?.assets.map(({uri}: any) => (
           <View key={uri} style={styles.sendImageContainer}>
@@ -326,16 +357,18 @@ export default function InputBox(props: Props) {
           </View>
         ))}
 
-      {soundURI && <AudioPlayer soundURI={soundURI} />}
       {soundURI && (
-        <Pressable onPress={resetSendAudio}>
-          <Ionicons
-            name="close-outline"
-            size={24}
-            color="black"
-            // style={{marginTop: -40}}
-          />
-        </Pressable>
+        <View style={{flexDirection: 'row', backgroundColor: 'white'}}>
+          <AudioPlayer soundURI={soundURI} />
+          <Pressable onPress={resetSendAudio}>
+            <Ionicons
+              name="close-outline"
+              size={24}
+              color="black"
+              style={{marginTop: -4, marginLeft: -25}}
+            />
+          </Pressable>
+        </View>
       )}
 
       {startRecord && (

@@ -2,24 +2,26 @@ import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   FlatList,
-  View,
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
-import {useRoute, useNavigation} from '@react-navigation/native';
+import {useRoute} from '@react-navigation/native';
 import type {RouteProp} from '@react-navigation/native';
 import {DataStore} from '@aws-amplify/datastore';
 import {SortDirection} from 'aws-amplify';
 
 import {ChatRoom, Message as MessageModel} from '../src/models';
-import ChatMessage from '../components/ChatMessage';
-import InputBox from '../components/InputBox';
+import Message from '../components/Message/Message';
+import InputBox from '../components/InputBox/InputBox';
 import {RootStackParamList} from '../types';
 
 type ChatRoomScreenRouteProp = RouteProp<RootStackParamList, 'ChatRoom'>;
 
 const ChatRoomScreen = () => {
   const [messages, setMessages] = useState<MessageModel[]>([]);
+  const [messageReplyTo, setMessageReplyTo] = useState<MessageModel | null>(
+    null,
+  );
   const [chatRoom, setChatRoom] = useState<ChatRoom | undefined>(undefined);
 
   const route = useRoute<ChatRoomScreenRouteProp>();
@@ -76,11 +78,20 @@ const ChatRoomScreen = () => {
     <SafeAreaView style={styles.page}>
       <FlatList
         data={messages}
-        renderItem={({item}) => <ChatMessage message={item} />}
+        renderItem={({item}) => (
+          <Message
+            message={item}
+            setAsMessageReply={() => setMessageReplyTo(item)}
+          />
+        )}
         inverted
       />
 
-      <InputBox chatRoom={chatRoom} />
+      <InputBox
+        chatRoom={chatRoom}
+        messageReplyTo={messageReplyTo}
+        removeMessageReplyTo={() => setMessageReplyTo(null)}
+      />
     </SafeAreaView>
   );
 };

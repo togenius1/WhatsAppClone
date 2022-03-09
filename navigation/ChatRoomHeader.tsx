@@ -98,21 +98,21 @@ const ChatRoomHeader = (props: Props) => {
         name="video"
         size={22}
         color={'white'}
-        style={{marginHorizontal: 5}}
+        style={{marginHorizontal: Platform.OS === 'ios' ? -5 : 15}}
       />
 
       <MaterialIcons
         name="call"
         size={22}
         color={'white'}
-        style={{marginHorizontal: 10}}
+        style={{marginHorizontal: Platform.OS === 'ios' ? 20 : 0}}
       />
 
       <MaterialCommunityIcons
         name="dots-vertical"
         size={22}
         color={'white'}
-        style={{marginHorizontal: -5}}
+        style={{marginHorizontal: Platform.OS === 'ios' ? -15 : 5}}
       />
     </View>
   );
@@ -125,13 +125,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     // width: width - 25,
-    marginLeft: Platform.OS === 'ios' ? -30 : -50,
+    marginLeft: Platform.OS === 'ios' ? -30 : -35,
     padding: 10,
     alignItems: 'center',
   },
   headerStatusContainer: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 15,
   },
   userName: {
     // fontWeight: 'bold',

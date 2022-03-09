@@ -1,5 +1,6 @@
 import {
   View,
+  Pressable,
   Text,
   StyleSheet,
   ActivityIndicator,
@@ -10,20 +11,24 @@ import {Auth} from '@aws-amplify/auth';
 import {DataStore} from '@aws-amplify/datastore';
 import {Storage} from '@aws-amplify/storage';
 import {S3Image} from 'aws-amplify-react-native';
-import moment from 'moment';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import {User, Message as MessageModel} from '../../src/models';
 import Colors from '../../constants/Colors';
 import AudioPlayer from '../AudioPlayer';
+import MessageReply from './MessageReply';
 
 type Props = {
   message: MessageModel;
+  setAsMessageReply: any;
 };
 
-const ChatMessage = (props: Props) => {
-  const {message: messageProp} = props;
-  const [message, setMessage] = useState<MessageModel>(messageProp);
+const Message = (props: Props) => {
+  const {message: propMessage, setAsMessageReply} = props;
+  const [message, setMessage] = useState<MessageModel>(propMessage);
+  const [repliedTo, setRepliedTo] = useState<MessageModel | undefined>(
+    undefined,
+  );
   const [user, setUser] = useState<User | undefined>();
   const [isMe, setIsMe] = useState<boolean | null>(null);
   const [soundURI, setSoundURI] = useState<any>(null);
@@ -33,6 +38,18 @@ const ChatMessage = (props: Props) => {
   useEffect(() => {
     DataStore.query(User, message.userID).then(setUser);
   }, [message.userID]);
+
+  useEffect(() => {
+    setMessage(propMessage);
+  }, [propMessage]);
+
+  useEffect(() => {
+    if (message?.replyToMessageID) {
+      DataStore.query(MessageModel, message.replyToMessageID).then(
+        setRepliedTo,
+      );
+    }
+  }, [message.replyToMessageID]);
 
   useEffect(() => {
     const subscription = DataStore.observe(MessageModel, message.id).subscribe(
@@ -82,14 +99,15 @@ const ChatMessage = (props: Props) => {
   }
 
   return (
-    // <View style={styles.container}>
-    <View
+    <Pressable
+      onLongPress={setAsMessageReply}
       style={[
         styles.container,
         isMe ? styles.rightContainer : styles.leftContainer,
         {width: message.image ? '65%' : 'auto'},
       ]}>
-      {/* {!isMe && <Text style={styles.msgContainer}>{message.name}</Text>} */}
+      {repliedTo && <MessageReply message={repliedTo} />}
+
       <View style={styles.row}>
         {message.image && (
           <View style={{marginBottom: message.content ? 10 : 0}}>
@@ -121,12 +139,11 @@ const ChatMessage = (props: Props) => {
           style={{marginTop: 5}}
         />
       )}
-    </View>
-    // </View>
+    </Pressable>
   );
 };
 
-export default ChatMessage;
+export default Message;
 
 const styles = StyleSheet.create({
   container: {
@@ -143,15 +160,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#DCF8C5',
     marginRight: 'auto',
     justifyContent: 'flex-start',
-    // marginLeft: 20,
-    // alignItems: 'flex-end',
   },
   rightContainer: {
     backgroundColor: 'white',
     marginLeft: 'auto',
     justifyContent: 'flex-start',
-    // marginRight: 20,
-    // alignItems: 'flex-end',
   },
   msgContainer: {
     color: Colors.light.tint,
